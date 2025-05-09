@@ -117,8 +117,7 @@ func (p *huggingfaceProvider) Configure(ctx context.Context, req provider.Config
 	tflog.Debug(ctx, "Creating Huggingface client")
 
 	// Create a new Hugging Face client using the configuration values
-	h := "http://localhost:8080"
-	client, err := huggingface.NewClient(&h, &hfToken)
+	client, err := huggingface.NewClient(nil, &hfToken)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to Create Hugging Face API Client",

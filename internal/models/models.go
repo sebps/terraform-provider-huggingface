@@ -54,14 +54,36 @@ func (e EndpointCompute) AttributeTypes() map[string]attr.Type {
 }
 
 type EndpointComputeScaling struct {
-	MinReplica types.Int32 `tfsdk:"min_replica"`
-	MaxReplica types.Int32 `tfsdk:"max_replica"`
+	MinReplica         types.Int32  `tfsdk:"min_replica"`
+	MaxReplica         types.Int32  `tfsdk:"max_replica"`
+	Measure            types.Object `tfsdk:"measure"`
+	Metric             types.Object `tfsdk:"metric"`
+	ScaleToZeroTimeout types.Number `tfsdk:"scale_to_zero_timeout"`
+	Threshold          types.Number `tfsdk:"threshold"`
 }
 
 func (e EndpointComputeScaling) AttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"min_replica": types.NumberType,
 		"max_replica": types.NumberType,
+		"measure": types.ObjectType{
+			AttrTypes: EndpointComputeScalingMeasure{}.AttributeTypes(),
+		},
+		"metric":                types.StringType,
+		"scale_to_zero_timeout": types.NumberType,
+		"threshold":             types.NumberType,
+	}
+}
+
+type EndpointComputeScalingMeasure struct {
+	HardwareUsage   types.Number `json:"hardware_usage"`
+	PendingRequests types.Number `json:"pending_requests"`
+}
+
+func (e EndpointComputeScalingMeasure) AttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"hardware_usage":   types.NumberType,
+		"pending_requests": types.NumberType,
 	}
 }
 
