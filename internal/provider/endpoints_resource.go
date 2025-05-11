@@ -90,6 +90,10 @@ func (r *endpointsResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 									},
 								},
 							},
+							"metric": schema.StringAttribute{
+								Computed: true,
+								Optional: true,
+							},
 							"scale_to_zero_timeout": schema.Int32Attribute{
 								Computed: true,
 								Optional: true,
@@ -115,7 +119,7 @@ func (r *endpointsResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 						Required: true,
 					},
 					"image": schema.SingleNestedAttribute{
-						Computed: true,
+						Required: true,
 						Attributes: map[string]schema.Attribute{
 							"huggingface": schema.SingleNestedAttribute{
 								Computed:   true,
@@ -128,12 +132,15 @@ func (r *endpointsResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 								Attributes: map[string]schema.Attribute{
 									"batch_size": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"neuron_cache": schema.StringAttribute{
 										Computed: true,
+										Optional: true,
 									},
 									"sequence_length": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 								},
 							},
@@ -143,30 +150,38 @@ func (r *endpointsResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 								Attributes: map[string]schema.Attribute{
 									"health_route": schema.StringAttribute{
 										Computed: true,
+										Optional: true,
 									},
 									"port": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"url": schema.StringAttribute{
-										Computed: true,
+										Required: true,
 									},
 									"max_batch_prefill_tokens": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"max_batch_total_tokens": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"max_input_length": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"max_total_tokens": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"disable_custom_kernels": schema.BoolAttribute{
 										Computed: true,
+										Optional: true,
 									},
 									"quantize": schema.StringAttribute{
 										Computed: true,
+										Optional: true,
 									},
 								},
 							},
@@ -176,30 +191,38 @@ func (r *endpointsResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 								Attributes: map[string]schema.Attribute{
 									"health_route": schema.StringAttribute{
 										Computed: true,
+										Optional: true,
 									},
 									"port": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"url": schema.StringAttribute{
-										Computed: true,
+										Required: true,
 									},
 									"max_batch_prefill_tokens": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"max_batch_total_tokens": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"max_input_length": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"max_total_tokens": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"hf_auto_cast_type": schema.StringAttribute{
 										Computed: true,
+										Optional: true,
 									},
 									"hf_num_cores": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 								},
 							},
@@ -209,21 +232,26 @@ func (r *endpointsResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 								Attributes: map[string]schema.Attribute{
 									"health_route": schema.StringAttribute{
 										Computed: true,
+										Optional: true,
 									},
 									"port": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"url": schema.StringAttribute{
-										Computed: true,
+										Required: true,
 									},
 									"max_batch_tokens": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"max_concurrent_requests": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"pooling": schema.StringAttribute{
 										Computed: true,
+										Optional: true,
 									},
 								},
 							},
@@ -233,36 +261,42 @@ func (r *endpointsResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 								Attributes: map[string]schema.Attribute{
 									"health_route": schema.StringAttribute{
 										Computed: true,
+										Optional: true,
 									},
 									"port": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"url": schema.StringAttribute{
-										Computed: true,
+										Required: true,
 									},
 									"ctx_size": schema.Int32Attribute{
-										Computed: true,
+										Required: true,
 									},
 									"mode": schema.StringAttribute{
 										Computed: true,
+										Optional: true,
 									},
 									"model_path": schema.StringAttribute{
-										Computed: true,
+										Required: true,
 									},
 									"n_gpu_layers": schema.Int32Attribute{
 										Computed: true,
+										Optional: true,
 									},
 									"n_parallel": schema.Int32Attribute{
-										Computed: true,
+										Required: true,
 									},
 									"pooling": schema.StringAttribute{
 										Computed: true,
+										Optional: true,
 									},
 									"threads_http": schema.Int32Attribute{
-										Computed: true,
+										Required: true,
 									},
 									"variant": schema.StringAttribute{
 										Computed: true,
+										Optional: true,
 									},
 								},
 							},
@@ -271,7 +305,7 @@ func (r *endpointsResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 								Optional: true,
 								Attributes: map[string]schema.Attribute{
 									"url": schema.StringAttribute{
-										Computed: true,
+										Required: true,
 									},
 									"health_route": schema.StringAttribute{
 										Computed: true,
@@ -279,16 +313,14 @@ func (r *endpointsResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 									"port": schema.Int32Attribute{
 										Computed: true,
 									},
-									"credentials": schema.MapNestedAttribute{
+									"credentials": schema.SingleNestedAttribute{
 										Computed: true,
-										NestedObject: schema.NestedAttributeObject{
-											Attributes: map[string]schema.Attribute{
-												"username": schema.StringAttribute{
-													Computed: true,
-												},
-												"password": schema.StringAttribute{
-													Computed: true,
-												},
+										Attributes: map[string]schema.Attribute{
+											"username": schema.StringAttribute{
+												Required: true,
+											},
+											"password": schema.StringAttribute{
+												Required: true,
 											},
 										},
 									},
