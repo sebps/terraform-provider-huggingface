@@ -6,6 +6,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
+type EmptyObject struct{}
+
+func (e EmptyObject) AttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{}
+}
+
 type Endpoint struct {
 	Namespace            types.String        `tfsdk:"namespace"`
 	Name                 types.String        `tfsdk:"name"`
@@ -54,36 +60,36 @@ func (e EndpointCompute) AttributeTypes() map[string]attr.Type {
 }
 
 type EndpointComputeScaling struct {
-	MinReplica         types.Int32  `tfsdk:"min_replica"`
-	MaxReplica         types.Int32  `tfsdk:"max_replica"`
-	Measure            types.Object `tfsdk:"measure"`
-	Metric             types.Object `tfsdk:"metric"`
-	ScaleToZeroTimeout types.Number `tfsdk:"scale_to_zero_timeout"`
-	Threshold          types.Number `tfsdk:"threshold"`
+	MinReplica         types.Int32   `tfsdk:"min_replica"`
+	MaxReplica         types.Int32   `tfsdk:"max_replica"`
+	Measure            types.Object  `tfsdk:"measure"`
+	Metric             types.String  `tfsdk:"metric"`
+	ScaleToZeroTimeout types.Int32   `tfsdk:"scale_to_zero_timeout"`
+	Threshold          types.Float64 `tfsdk:"threshold"`
 }
 
 func (e EndpointComputeScaling) AttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"min_replica": types.NumberType,
-		"max_replica": types.NumberType,
+		"min_replica": types.Int32Type,
+		"max_replica": types.Int32Type,
 		"measure": types.ObjectType{
 			AttrTypes: EndpointComputeScalingMeasure{}.AttributeTypes(),
 		},
 		"metric":                types.StringType,
-		"scale_to_zero_timeout": types.NumberType,
-		"threshold":             types.NumberType,
+		"scale_to_zero_timeout": types.Int32Type,
+		"threshold":             types.Float64Type,
 	}
 }
 
 type EndpointComputeScalingMeasure struct {
-	HardwareUsage   types.Number `json:"hardware_usage"`
-	PendingRequests types.Number `json:"pending_requests"`
+	HardwareUsage   types.Float64 `tfsdk:"hardware_usage"`
+	PendingRequests types.Float64 `tfsdk:"pending_requests"`
 }
 
 func (e EndpointComputeScalingMeasure) AttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"hardware_usage":   types.NumberType,
-		"pending_requests": types.NumberType,
+		"hardware_usage":   types.Float64Type,
+		"pending_requests": types.Float64Type,
 	}
 }
 
@@ -99,6 +105,9 @@ func (m Model) AttributeTypes() map[string]attr.Type {
 		"repository": types.StringType,
 		"framework":  types.StringType,
 		"task":       types.StringType,
+		"image": types.ObjectType{
+			AttrTypes: ModelImage{}.AttributeTypes(),
+		},
 	}
 }
 
@@ -137,6 +146,10 @@ func (m ModelImage) AttributeTypes() map[string]attr.Type {
 }
 
 type ModelImageHuggingface struct{}
+
+func (m ModelImageHuggingface) AttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{}
+}
 
 type ModelImageHuggingfaceNeuron struct {
 	BatchSize      types.Int32  `tfsdk:"batch_size"`
@@ -215,27 +228,27 @@ type ModelImageTei struct {
 
 func (m ModelImageTei) AttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"healthRoute":           types.Int32Type,
-		"port":                  types.Int32Type,
-		"url":                   types.Int32Type,
-		"maxBatchTokens":        types.Int32Type,
-		"maxConcurrentRequests": types.Int32Type,
-		"pooling":               types.Int32Type,
+		"health_route":            types.StringType,
+		"port":                    types.Int32Type,
+		"url":                     types.StringType,
+		"max_batch_tokens":        types.Int32Type,
+		"max_concurrent_requests": types.Int32Type,
+		"pooling":                 types.StringType,
 	}
 }
 
 type ModelImageLlamacpp struct {
-	HealthRoute types.String `json:"health_route"`
-	Port        types.Int32  `json:"port"`
-	URL         types.String `json:"url"`
-	CtxSize     types.Int32  `json:"ctx_size"`
-	Mode        types.String `json:"mode"`
-	ModelPath   types.String `json:"model_path"`
-	NGpuLayers  types.Int32  `json:"n_gpu_layers"`
-	NParallel   types.Int32  `json:"n_parallel"`
-	Pooling     types.String `json:"pooling"`
-	ThreadsHttp types.Int32  `json:"threads_http"`
-	Variant     types.String `json:"variant"`
+	HealthRoute types.String `tfsdk:"health_route"`
+	Port        types.Int32  `tfsdk:"port"`
+	URL         types.String `tfsdk:"url"`
+	CtxSize     types.Int32  `tfsdk:"ctx_size"`
+	Mode        types.String `tfsdk:"mode"`
+	ModelPath   types.String `tfsdk:"model_path"`
+	NGpuLayers  types.Int32  `tfsdk:"n_gpu_layers"`
+	NParallel   types.Int32  `tfsdk:"n_parallel"`
+	Pooling     types.String `tfsdk:"pooling"`
+	ThreadsHttp types.Int32  `tfsdk:"threads_http"`
+	Variant     types.String `tfsdk:"variant"`
 }
 
 func (m ModelImageLlamacpp) AttributeTypes() map[string]attr.Type {
@@ -255,10 +268,10 @@ func (m ModelImageLlamacpp) AttributeTypes() map[string]attr.Type {
 }
 
 type ModelImageCustom struct {
-	HealthRoute types.String `json:"health_route"`
-	Port        types.Int32  `json:"port"`
-	URL         types.String `json:"url"`
-	Credentials types.Object `json:"credentials"`
+	HealthRoute types.String `tfsdk:"health_route"`
+	Port        types.Int32  `tfsdk:"port"`
+	URL         types.String `tfsdk:"url"`
+	Credentials types.Object `tfsdk:"credentials"`
 }
 
 func (m ModelImageCustom) AttributeTypes() map[string]attr.Type {
