@@ -13,6 +13,7 @@ func (e EmptyObject) AttributeTypes() map[string]attr.Type {
 }
 
 type Endpoint struct {
+	ID                   types.String        `tfsdk:"id"`
 	Namespace            types.String        `tfsdk:"namespace"`
 	Name                 types.String        `tfsdk:"name"`
 	Type                 types.String        `tfsdk:"type"`
