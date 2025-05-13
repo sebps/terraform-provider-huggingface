@@ -36,7 +36,7 @@ func (r *endpointsResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	// Define endpoint to create from plan
-	endpointToCreate := transformers.FromPlanToEndpoint(ctx, &plan)
+	endpointToCreate := transformers.FromModelToProvider(ctx, &plan)
 
 	// Create new endpoint
 	endpointCreated, err := r.client.CreateEndpoint(namespace, endpointToCreate)
@@ -49,7 +49,7 @@ func (r *endpointsResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	// Map back plan from updated endpoint
-	updatedPlan, diags := transformers.FromEndpointToPlan(ctx, endpointCreated)
+	updatedPlan, diags := transformers.FromProviderToModel(ctx, endpointCreated)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return

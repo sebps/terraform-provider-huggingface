@@ -60,7 +60,7 @@ func (r *endpointsResource) Read(ctx context.Context, req resource.ReadRequest, 
 		return
 	}
 
-	updatedPlan, diags := transformers.FromEndpointToPlan(ctx, endpoint)
+	updatedPlan, diags := transformers.FromProviderToModel(ctx, endpoint)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return

@@ -12,7 +12,7 @@ import (
 	"github.com/sebps/terraform-provider-huggingface/internal/states"
 )
 
-func FromPlanToEndpoint(
+func FromModelToProvider(
 	ctx context.Context,
 	input *states.EndpointResourceState,
 ) (output huggingface.Endpoint) {
@@ -422,12 +422,10 @@ func FromPlanToEndpoint(
 		tags, _ := input.Tags.ToTerraformValue(ctx)
 		tags.As(&output.Tags)
 	}
-
 	if !input.CacheHttpResponses.IsNull() {
 		cacheHttpResponse := input.CacheHttpResponses.ValueBool()
 		output.CacheHttpResponses = &cacheHttpResponse
 	}
-
 	if !input.ExperimentalFeatures.IsNull() {
 		output.ExperimentalFeatures = &huggingface.ExperimentalFeatures{}
 		experimentalFeaturesAttributes := input.ExperimentalFeatures.Attributes()
@@ -462,7 +460,6 @@ func FromPlanToEndpoint(
 			tfShared.As(output.PrivateService.Shared)
 		}
 	}
-
 	if !input.Route.IsNull() && !input.Route.IsUnknown() {
 		output.Route = &huggingface.RouteSpec{}
 		routeAttributes := input.Route.Attributes()
@@ -888,7 +885,6 @@ func FromPlanToEndpointUpdate(
 		tags, _ := input.Tags.ToTerraformValue(ctx)
 		tags.As(&output.Tags)
 	}
-
 	if !input.ExperimentalFeatures.IsNull() {
 		output.ExperimentalFeatures = &huggingface.ExperimentalFeatures{}
 		experimentalFeaturesAttributes := input.ExperimentalFeatures.Attributes()
@@ -927,10 +923,10 @@ func FromPlanToEndpointUpdate(
 	return
 }
 
-func FromEndpointToPlan(
+func FromProviderToModel(
 	ctx context.Context,
 	input *huggingface.EndpointWithStatus,
-) (output states.EndpointResourceState, diags diag.Diagnostics) {
+) (output models.Endpoint, diags diag.Diagnostics) {
 	var diag diag.Diagnostics
 
 	// Root
@@ -976,9 +972,9 @@ func FromEndpointToPlan(
 		endpointScalingMetric := *input.Compute.Scaling.Metric
 		endpointComputeScaling.Metric = types.StringValue(string(endpointScalingMetric))
 	}
-
 	if input.Compute.Scaling.Measure != nil {
 		endpointComputeScalingMeasure := models.EndpointComputeScalingMeasure{}
+
 		if input.Compute.Scaling.Measure.HardwareUsage != nil {
 			hardwareUsage := *input.Compute.Scaling.Measure.HardwareUsage
 			endpointComputeScalingMeasure.HardwareUsage = types.Float64Value(hardwareUsage)
@@ -1070,7 +1066,6 @@ func FromEndpointToPlan(
 		}
 
 		huggingFaceTgiImage.Port = types.Int32Value(int32(input.Model.Image.TGI.Port))
-
 		huggingFaceTgiImage.Url = types.StringValue(input.Model.Image.TGI.URL)
 
 		if input.Model.Image.TGI.MaxBatchPrefillTokens != nil {
@@ -1123,7 +1118,6 @@ func FromEndpointToPlan(
 		}
 
 		huggingFaceTgiNeuronImage.Port = types.Int32Value(int32(input.Model.Image.TGINeuron.Port))
-
 		huggingFaceTgiNeuronImage.Url = types.StringValue(input.Model.Image.TGINeuron.URL)
 
 		if input.Model.Image.TGINeuron.MaxBatchPrefillTokens != nil {
@@ -1179,7 +1173,6 @@ func FromEndpointToPlan(
 		}
 
 		huggingFaceTeiNeuronImage.Port = types.Int32Value(int32(input.Model.Image.TEI.Port))
-
 		huggingFaceTeiNeuronImage.URL = types.StringValue(input.Model.Image.TEI.URL)
 
 		if input.Model.Image.TEI.MaxBatchTokens != nil {
@@ -1220,9 +1213,7 @@ func FromEndpointToPlan(
 		}
 
 		llamaCppImage.Port = types.Int32Value(int32(input.Model.Image.LlamaCpp.Port))
-
 		llamaCppImage.URL = types.StringValue(input.Model.Image.LlamaCpp.URL)
-
 		llamaCppImage.CtxSize = types.Int32Value(int32(input.Model.Image.LlamaCpp.CtxSize))
 
 		if input.Model.Image.LlamaCpp.Mode != nil {
@@ -1230,19 +1221,15 @@ func FromEndpointToPlan(
 		}
 
 		llamaCppImage.ModelPath = types.StringValue(string(input.Model.Image.LlamaCpp.ModelPath))
-
 		llamaCppImage.NGpuLayers = types.Int32Value(int32(input.Model.Image.LlamaCpp.NGpuLayers))
-
 		llamaCppImage.NParallel = types.Int32Value(int32(input.Model.Image.LlamaCpp.NParallel))
 
 		if input.Model.Image.LlamaCpp.Pooling != nil {
 			llamaCppImage.Pooling = types.StringValue(string(*input.Model.Image.LlamaCpp.Pooling))
 		}
-
 		if input.Model.Image.LlamaCpp.ThreadsHttp != nil {
 			llamaCppImage.ThreadsHttp = types.Int32Value(int32(*input.Model.Image.LlamaCpp.ThreadsHttp))
 		}
-
 		if input.Model.Image.LlamaCpp.Variant != nil {
 			llamaCppImage.Variant = types.StringValue(string(*input.Model.Image.LlamaCpp.Variant))
 		}
@@ -1306,6 +1293,7 @@ func FromEndpointToPlan(
 			Username: types.StringNull(),
 			Password: types.StringNull(),
 		}
+
 		var credentials types.Object
 		credentials, diag = types.ObjectValueFrom(ctx, mCredentials.AttributeTypes(), mCredentials)
 		diags.Append(diag...)
@@ -1367,6 +1355,7 @@ func FromEndpointToPlan(
 				Tag: types.StringValue(""),
 			}
 		}
+
 		experimentalFeatures.KVRouter, diag = types.ObjectValueFrom(ctx, kvRouter.AttributeTypes(), kvRouter)
 		diags.Append(diag...)
 		if diags.HasError() {
@@ -1380,6 +1369,7 @@ func FromEndpointToPlan(
 		kvRouter := models.KvRouter{
 			Tag: types.StringValue(""),
 		}
+
 		experimentalFeatures.KVRouter, diag = types.ObjectValueFrom(ctx, kvRouter.AttributeTypes(), kvRouter)
 		diags.Append(diag...)
 		if diags.HasError() {
@@ -1442,10 +1432,12 @@ func FromEndpointToPlan(
 		ReadyReplica:  types.Int32Value(int32(input.Status.ReadyReplica)),
 		TargetReplica: types.Int32Value(int32(input.Status.TargetReplica)),
 	}
+
 	endpointStatusCreatedBy := models.User{
 		Id:   types.StringValue(input.Status.CreatedBy.ID),
 		Name: types.StringValue(input.Status.CreatedBy.Name),
 	}
+
 	endpointStatus.CreatedBy, diag = types.ObjectValueFrom(ctx, endpointStatusCreatedBy.AttributeTypes(), endpointStatusCreatedBy)
 	diags.Append(diag...)
 	if diags.HasError() {
@@ -1456,6 +1448,7 @@ func FromEndpointToPlan(
 		Id:   types.StringValue(input.Status.UpdatedBy.ID),
 		Name: types.StringValue(input.Status.UpdatedBy.Name),
 	}
+
 	endpointStatus.UpdatedBy, diag = types.ObjectValueFrom(ctx, endpointStatusUpdatedBy.AttributeTypes(), endpointStatusUpdatedBy)
 	diags.Append(diag...)
 	if diags.HasError() {
@@ -1484,6 +1477,7 @@ func FromEndpointToPlan(
 			ServiceName: types.StringValue(""),
 		}
 	}
+
 	endpointStatus.Private, diag = types.ObjectValueFrom(ctx, endpointStatusPrivate.AttributeTypes(), endpointStatusPrivate)
 	diags.Append(diag...)
 	if diags.HasError() {
@@ -1498,195 +1492,3 @@ func FromEndpointToPlan(
 
 	return
 }
-
-// func Archive() {
-// 	// 	Cloud Provider
-// 	endpointCloudProvider := models.EndpointCloudProvider{
-// 		Vendor: types.StringValue(endpoint.Provider.Vendor),
-// 		Region: types.StringValue(endpoint.Provider.Region),
-// 	}
-// 	endpointState.CloudProvider, diags = types.ObjectValueFrom(ctx, endpointCloudProvider.AttributeTypes(), endpointCloudProvider)
-// 	resp.Diagnostics.Append(diags...)
-// 	if resp.Diagnostics.HasError() {
-// 		return
-// 	}
-
-// 	// Compute
-// 	endpointCompute := models.EndpointCompute{
-// 		ID:          types.StringValue(*endpoint.Compute.ID),
-// 		Accelerator: types.StringValue(string(endpoint.Compute.Accelerator)),
-// 	}
-// 	endpointState.Compute, diags = types.ObjectValueFrom(ctx, endpointCompute.AttributeTypes(), endpointCompute)
-// 	resp.Diagnostics.Append(diags...)
-// 	if resp.Diagnostics.HasError() {
-// 		return
-// 	}
-
-// 	// Model
-// 	endpointModel := models.Model{
-// 		Repository: types.StringValue(endpoint.Model.Repository),
-// 		Framework:  types.StringValue(string(endpoint.Model.Framework)),
-// 		Task:       types.StringValue(string(endpoint.Model.Task)),
-// 	}
-// 	endpointState.Model, diags = types.ObjectValueFrom(ctx, endpointModel.AttributeTypes(), endpointModel)
-// 	resp.Diagnostics.Append(diags...)
-// 	if resp.Diagnostics.HasError() {
-// 		return
-// 	}
-
-// 	// Tags
-// 	endpointState.Tags, diags = types.ListValueFrom(ctx, types.StringType, endpoint.Tags)
-// 	resp.Diagnostics.Append(diags...)
-// 	if resp.Diagnostics.HasError() {
-// 		return
-// 	}
-
-// 	if endpoint.CacheHttpResponses != nil {
-// 		endpointState.CacheHttpResponses = types.BoolValue(*endpoint.CacheHttpResponses)
-// 	} else {
-// 		endpointState.CacheHttpResponses = types.BoolValue(false)
-// 	}
-
-// 	// Experimental Features
-// 	var experimentalFeatures models.ExperimentalFeatures
-// 	if endpoint.ExperimentalFeatures != nil {
-// 		experimentalFeatures = models.ExperimentalFeatures{
-// 			CacheHTTPResponses: types.BoolValue(endpoint.ExperimentalFeatures.CacheHttpResponses),
-// 		}
-
-// 		var kvRouter models.KvRouter
-// 		if endpoint.ExperimentalFeatures.KvRouter != nil {
-// 			kvRouter = models.KvRouter{
-// 				Tag: types.StringValue(endpoint.ExperimentalFeatures.KvRouter.Tag),
-// 			}
-// 		} else {
-// 			kvRouter = models.KvRouter{
-// 				Tag: types.StringValue(""),
-// 			}
-// 		}
-// 		experimentalFeatures.KVRouter, diags = types.ObjectValueFrom(ctx, kvRouter.AttributeTypes(), kvRouter)
-// 		resp.Diagnostics.Append(diags...)
-// 		if resp.Diagnostics.HasError() {
-// 			return
-// 		}
-// 	} else {
-// 		experimentalFeatures = models.ExperimentalFeatures{
-// 			CacheHTTPResponses: types.BoolValue(false),
-// 		}
-
-// 		kvRouter := models.KvRouter{
-// 			Tag: types.StringValue(""),
-// 		}
-// 		experimentalFeatures.KVRouter, diags = types.ObjectValueFrom(ctx, kvRouter.AttributeTypes(), kvRouter)
-// 		resp.Diagnostics.Append(diags...)
-// 		if resp.Diagnostics.HasError() {
-// 			return
-// 		}
-// 	}
-// 	endpointState.ExperimentalFeatures, diags = types.ObjectValueFrom(ctx, experimentalFeatures.AttributeTypes(), experimentalFeatures)
-// 	resp.Diagnostics.Append(diags...)
-// 	if resp.Diagnostics.HasError() {
-// 		return
-// 	}
-
-// 	// Private Service
-// 	var endpointPrivateService models.PrivateService
-// 	if endpoint.PrivateService != nil {
-// 		endpointPrivateService = models.PrivateService{
-// 			AccountID: types.StringValue(endpoint.PrivateService.AccountID),
-// 			Shared:    types.BoolValue(endpoint.PrivateService.Shared),
-// 		}
-// 	} else {
-// 		endpointPrivateService = models.PrivateService{
-// 			AccountID: types.StringValue(""),
-// 			Shared:    types.BoolValue(false),
-// 		}
-// 	}
-// 	endpointState.PrivateService, diags = types.ObjectValueFrom(ctx, endpointPrivateService.AttributeTypes(), endpointPrivateService)
-// 	resp.Diagnostics.Append(diags...)
-// 	if resp.Diagnostics.HasError() {
-// 		return
-// 	}
-
-// 	// Route
-// 	var endpointRoute models.Route
-// 	if endpoint.Route != nil {
-// 		endpointRoute = models.Route{
-// 			Domain: types.StringValue(endpoint.Route.Domain),
-// 			Path:   types.StringValue(endpoint.Route.Path),
-// 		}
-// 	} else {
-// 		endpointRoute = models.Route{
-// 			Domain: types.StringValue(""),
-// 			Path:   types.StringValue(""),
-// 		}
-// 	}
-// 	endpointState.Route, diags = types.ObjectValueFrom(ctx, endpointRoute.AttributeTypes(), endpointRoute)
-// 	resp.Diagnostics.Append(diags...)
-// 	if resp.Diagnostics.HasError() {
-// 		return
-// 	}
-
-// 	// Status
-// 	endpointStatus := models.Status{
-// 		CreatedAt:     types.StringValue(endpoint.Status.CreatedAt.String()),
-// 		UpdatedAt:     types.StringValue(endpoint.Status.UpdatedAt.String()),
-// 		State:         types.StringValue(string(endpoint.Status.State)),
-// 		Message:       types.StringValue(endpoint.Status.Message),
-// 		ReadyReplica:  types.Int32Value(int32(endpoint.Status.ReadyReplica)),
-// 		TargetReplica: types.Int32Value(int32(endpoint.Status.TargetReplica)),
-// 	}
-// 	endpointStatusCreatedBy := models.User{
-// 		Id:   types.StringValue(endpoint.Status.CreatedBy.ID),
-// 		Name: types.StringValue(endpoint.Status.CreatedBy.Name),
-// 	}
-// 	endpointStatus.CreatedBy, diags = types.ObjectValueFrom(ctx, endpointStatusCreatedBy.AttributeTypes(), endpointStatusCreatedBy)
-// 	resp.Diagnostics.Append(diags...)
-// 	if resp.Diagnostics.HasError() {
-// 		return
-// 	}
-
-// 	endpointStatusUpdatedBy := models.User{
-// 		Id:   types.StringValue(endpoint.Status.UpdatedBy.ID),
-// 		Name: types.StringValue(endpoint.Status.UpdatedBy.Name),
-// 	}
-// 	endpointStatus.UpdatedBy, diags = types.ObjectValueFrom(ctx, endpointStatusUpdatedBy.AttributeTypes(), endpointStatusUpdatedBy)
-// 	resp.Diagnostics.Append(diags...)
-// 	if resp.Diagnostics.HasError() {
-// 		return
-// 	}
-
-// 	if endpoint.Status.ErrorMessage != nil {
-// 		endpointStatus.ErrorMessage = types.StringValue(*endpoint.Status.ErrorMessage)
-// 	} else {
-// 		endpointStatus.ErrorMessage = types.StringValue("")
-// 	}
-
-// 	if endpoint.Status.URL != nil {
-// 		endpointStatus.Url = types.StringValue(*endpoint.Status.URL)
-// 	} else {
-// 		endpointStatus.Url = types.StringValue("")
-// 	}
-
-// 	var endpointStatusPrivate models.Private
-// 	if endpoint.Status.Private != nil && endpoint.Status.Private.ServiceName != nil {
-// 		endpointStatusPrivate = models.Private{
-// 			ServiceName: types.StringValue(*endpoint.Status.Private.ServiceName),
-// 		}
-// 	} else {
-// 		endpointStatusPrivate = models.Private{
-// 			ServiceName: types.StringValue(""),
-// 		}
-// 	}
-// 	endpointStatus.Private, diags = types.ObjectValueFrom(ctx, endpointStatusPrivate.AttributeTypes(), endpointStatusPrivate)
-// 	resp.Diagnostics.Append(diags...)
-// 	if resp.Diagnostics.HasError() {
-// 		return
-// 	}
-
-// 	endpointState.Status, diags = types.ObjectValueFrom(ctx, endpointStatus.AttributeTypes(), endpointStatus)
-// 	resp.Diagnostics.Append(diags...)
-// 	if resp.Diagnostics.HasError() {
-// 		return
-// 	}
-// }

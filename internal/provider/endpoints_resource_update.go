@@ -52,7 +52,7 @@ func (r *endpointsResource) Update(ctx context.Context, req resource.UpdateReque
 	}
 
 	// Map back plan from created endpoint
-	updatedPlan, diags := transformers.FromEndpointToPlan(ctx, endpointUpdated)
+	updatedPlan, diags := transformers.FromProviderToModel(ctx, endpointUpdated)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
