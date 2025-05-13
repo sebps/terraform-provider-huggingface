@@ -1,23 +1,3 @@
-# Terraform Provider for Huggingface
-
-The Terraform provider for Huggingface is a Terraform plugin to enable full lifecycle management of Huggingface resources.
-
-## Usage
-
-```
-terraform {
-  required_providers {
-    huggingface = {
-      source  = "hashicorp.com/edu/huggingface"
-      version = "~> 1.0"
-    }
-  }
-}
-
-provider "huggingface" {
-  hf_token = "<YOUR_HF_TOKEN>"
-}
-
 resource "huggingface_endpoint" "example" {
   namespace = "<YOUR_NAMESPACE>"
   name      = "test-terraform-0"
@@ -52,8 +32,3 @@ resource "huggingface_endpoint" "example" {
     vendor = "aws"
   }
 }
-
-output "example_endpoint" {
-  value = huggingface_endpoint.example
-}
-```

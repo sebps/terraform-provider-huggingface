@@ -50,9 +50,10 @@ func (p *huggingfaceProvider) Schema(_ context.Context, _ provider.SchemaRequest
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"hf_token": schema.StringAttribute{
-				Optional:  false,
-				Sensitive: true,
-				Required:  true,
+				Description: "Hugging face token from the Access Token section",
+				Optional:    false,
+				Sensitive:   true,
+				Required:    true,
 			},
 		},
 	}
@@ -117,6 +118,7 @@ func (p *huggingfaceProvider) Configure(ctx context.Context, req provider.Config
 	tflog.Debug(ctx, "Creating Huggingface client")
 
 	// Create a new Hugging Face client using the configuration values
+	// h := "http://localhost:8080"
 	client, err := huggingface.NewClient(nil, &hfToken)
 	if err != nil {
 		resp.Diagnostics.AddError(

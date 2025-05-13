@@ -1,10 +1,3 @@
-# Terraform Provider for Huggingface
-
-The Terraform provider for Huggingface is a Terraform plugin to enable full lifecycle management of Huggingface resources.
-
-## Usage
-
-```
 terraform {
   required_providers {
     huggingface = {
@@ -56,4 +49,3 @@ resource "huggingface_endpoint" "example" {
 output "example_endpoint" {
   value = huggingface_endpoint.example
 }
-```
