@@ -8,8 +8,8 @@ The Terraform provider for Huggingface is a Terraform plugin to enable full life
 terraform {
   required_providers {
     huggingface = {
-      source  = "hashicorp.com/edu/huggingface"
-      version = "~> 1.0"
+      source  = "sebps/huggingface"
+      version = "~> 0.0.1"
     }
   }
 }
@@ -57,3 +57,6 @@ output "example_endpoint" {
   value = huggingface_endpoint.example
 }
 ```
+
+## architecture
+![Huggingface diagram](./docs/architecture.png)
